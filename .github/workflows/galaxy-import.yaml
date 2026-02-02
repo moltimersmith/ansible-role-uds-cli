@@ -16,7 +16,7 @@ permissions:
 jobs:
   import:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
-    uses: moltimersmith/github-workflows/.github/workflows/galaxy-import.yaml@v1.0.0
+    uses: moltimersmith/github-workflows/.github/workflows/reusable-galaxy-import.yaml@v0.0.1
     with:
       github_user: moltimersmith
       github_repo: ansible-role-uds-cli
