@@ -3,7 +3,7 @@
 
 - name: Preflight | show target platform
   ansible.builtin.debug:
-    msg: "Installing UDS CLI on ansible_system={{ ansible_system }} ansible_architecture={{ ansible_architecture }}"
+    msg: "Managing UDS CLI on ansible_system={{ ansible_system }} ansible_architecture={{ ansible_architecture }} state={{ uds_cli_state | default('present') }}"
 
 - name: macOS | manage via Homebrew
   when: ansible_system == 'Darwin'
@@ -28,19 +28,10 @@
       ansible.builtin.set_fact:
         uds_bin: "{{ (brew_bin | default('brew') | dirname) ~ '/uds' }}"
 
-    - name: macOS | ensure taps are present (install path only)
-      community.general.homebrew_tap:
-        name: "{{ item }}"
-        state: present
-        path: "{{ brew_bin | dirname }}"
-      loop: "{{ uds_cli_brew_taps }}"
-      when: uds_cli_state == 'present'
-
     - name: macOS | list installed uds formulae
       ansible.builtin.command: "{{ brew_bin }} list --formula"
       register: brew_formula_list
       changed_when: false
-      when: uds_cli_state == 'present'
 
     - name: macOS | compute installed uds formulae
       ansible.builtin.set_fact:
@@ -50,6 +41,22 @@
             | select('match', '^uds(@.+)?$')
             | list
           }}
+
+    - name: macOS | uninstall all uds* formulae (absent)
+      community.general.homebrew:
+        name: "{{ uds_cli_installed_formulae }}"
+        state: absent
+        path: "{{ brew_bin | dirname }}"
+      when:
+        - uds_cli_state == 'absent'
+        - (uds_cli_installed_formulae | default([]) | length) > 0
+
+    - name: macOS | ensure taps are present (install path only)
+      community.general.homebrew_tap:
+        name: "{{ item }}"
+        state: present
+        path: "{{ brew_bin | dirname }}"
+      loop: "{{ uds_cli_brew_taps }}"
       when: uds_cli_state == 'present'
 
     - name: macOS | uninstall other uds* formulae to avoid brew link conflicts
@@ -67,13 +74,6 @@
         state: present
         path: "{{ brew_bin | dirname }}"
       when: uds_cli_state == 'present'
-
-    - name: macOS | uninstall uds (brew)
-      community.general.homebrew:
-        name: "{{ uds_cli_brew_formulae }}"
-        state: absent
-        path: "{{ brew_bin | dirname }}"
-      when: uds_cli_state == 'absent'
 
     - name: macOS | verify uds is installed
       ansible.builtin.command: "{{ uds_bin }} version"
