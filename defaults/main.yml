@@ -1,3 +1,11 @@
 #SPDX-License-Identifier: MIT-0
 ---
-# defaults file for uds-cli
+
+# Install UDS CLI (uds)
+
+# Homebrew settings (macOS)
+uds_cli_brew_update: false
+uds_cli_brew_taps:
+  - defenseunicorns/tap
+uds_cli_brew_formulae:
+  - uds

@@ -1,3 +1,40 @@
 #SPDX-License-Identifier: MIT-0
 ---
-# tasks file for uds-cli
+
+- name: Preflight | show target platform
+  ansible.builtin.debug:
+    msg: "Installing UDS CLI on ansible_system={{ ansible_system }} ansible_architecture={{ ansible_architecture }}"
+
+- name: macOS | install via Homebrew
+  when: ansible_system == 'Darwin'
+  block:
+    - name: macOS | ensure Homebrew + required taps/formulae
+      ansible.builtin.include_role:
+        name: moltimersmith.brew
+      vars:
+        brew_update: "{{ uds_cli_brew_update | bool }}"
+        brew_taps: "{{ uds_cli_brew_taps }}"
+        brew_formulae: "{{ uds_cli_brew_formulae }}"
+
+    - name: macOS | verify uds is installed
+      ansible.builtin.command: uds version
+      register: uds_cli_version
+      changed_when: false
+
+    - name: macOS | uds version
+      ansible.builtin.debug:
+        var: uds_cli_version.stdout
+
+- name: Linux | placeholder (not implemented)
+  when: ansible_system == 'Linux'
+  ansible.builtin.fail:
+    msg: |
+      UDS CLI installation for Linux is not implemented yet in this role.
+
+      Planned approach: install the uds binary (pinned version) via URL/local file + checksum verification.
+      For now, run this role only on macOS, or implement the Linux installer block.
+
+- name: Unsupported OS
+  when: ansible_system not in ['Darwin', 'Linux']
+  ansible.builtin.fail:
+    msg: "Unsupported OS for uds_cli role: ansible_system={{ ansible_system }}"
