@@ -1,7 +1,7 @@
-Role Name
-=========
+uds_cli
+=======
 
-A brief description of the role goes here.
+Installs the Defense Unicorns **UDS CLI** (`uds`).
 
 Requirements
 ------------
