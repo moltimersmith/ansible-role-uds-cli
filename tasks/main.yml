@@ -16,8 +16,12 @@
         brew_taps: "{{ uds_cli_brew_taps }}"
         brew_formulae: "{{ uds_cli_brew_formulae }}"
 
+    - name: macOS | set uds_bin (same dir as brew)
+      ansible.builtin.set_fact:
+        uds_bin: "{{ (brew_bin | default('brew') | dirname) ~ '/uds' }}"
+
     - name: macOS | verify uds is installed
-      ansible.builtin.command: uds version
+      ansible.builtin.command: "{{ uds_bin }} version"
       register: uds_cli_version
       changed_when: false
 
