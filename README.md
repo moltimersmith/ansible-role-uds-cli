@@ -17,6 +17,9 @@ Role Variables
 --------------
 
 ```yaml
+# Desired state
+uds_cli_state: present  # or: absent
+
 # macOS/Homebrew behavior
 uds_cli_brew_update: false
 uds_cli_brew_taps:

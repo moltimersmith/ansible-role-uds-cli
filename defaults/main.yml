@@ -1,7 +1,12 @@
 #SPDX-License-Identifier: MIT-0
 ---
 
-# Install UDS CLI (uds)
+# Manage UDS CLI (uds)
+
+# Desired state of UDS CLI
+# - present: ensure installed
+# - absent:  uninstall
+uds_cli_state: present
 
 # Homebrew settings (macOS)
 uds_cli_brew_update: false
