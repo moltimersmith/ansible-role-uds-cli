@@ -5,6 +5,7 @@ Installs the Defense Unicorns **UDS CLI** (`uds`).
 
 Currently implemented:
 - macOS (Darwin): installs via Homebrew (using the published Galaxy role `moltimersmith.brew`)
+  - When installing, the role will automatically uninstall any other installed `uds`/`uds@...` formulae to avoid `brew link` conflicts.
 - Linux: placeholder only (fails with a clear message)
 
 Requirements
